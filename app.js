@@ -1,10 +1,13 @@
 const express = require("express")
 const BodyParser = require("body-parser")
 const date=require(__dirname+"/date.js")
-const app = express();
-const mongoose=require("mongoose");
 const { name } = require("ejs");
 const _= require("lodash")
+const mongoose=require("mongoose");
+require("dotenv").config();
+
+const app = express();
+
 const day = date.getDate();
 
 app.use(BodyParser.urlencoded({extended:true}))
@@ -14,15 +17,19 @@ app.set("view engine", "ejs");
 //app.set('case sensitive routing',true)
 let items=[];
 let workItems=[];
-const uri="mongodb://127.0.0.1:27017/todoListDB"
+// const uri="mongodb://127.0.0.1:27017/todoListDB"
+const uri = process.env.MONGO_DB_TODOLIST
 const verification= async  () =>
 {
   try {
+    if(!uri)
+    throw new Error("You forgot to set an MONGO_DB_TODOLIST Key ")
     let res=await  mongoose.connect(uri)
     console.log("Succesfully logged")
-   } catch (error) {
-     console.log("Error",error)
+   } catch (err) {
+     console.log(err)
    }
+   
   }
   verification().then(()=>{
    const itemSchema=new mongoose.Schema(
